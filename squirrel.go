@@ -166,7 +166,7 @@ func DebugSqlizer(s Sqlizer) string {
 					sql, len(args))
 			}
 			buf.WriteString(sql[:p])
-			fmt.Fprintf(buf, "'%v'", args[i])
+			fmt.Fprintf(buf, "%s", quoteValue(args[i]))
 			// advance our sql string "cursor" beyond the arg we placed
 			sql = sql[p+1:]
 			i++
@@ -180,4 +180,17 @@ func DebugSqlizer(s Sqlizer) string {
 	// "append" any remaning sql that won't need interpolating
 	buf.WriteString(sql)
 	return buf.String()
+}
+
+// quoteValue quotes value other than numeric.
+func quoteValue(arg interface{}) string {
+	switch arg.(type) {
+	case int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64:
+		return fmt.Sprintf("%d", arg)
+	case float32, float64:
+		return fmt.Sprintf("%f", arg)
+	default:
+		return fmt.Sprintf("'%v'", arg)
+	}
 }

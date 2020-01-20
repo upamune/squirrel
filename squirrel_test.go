@@ -180,3 +180,70 @@ func TestDebugSqlizerErrors(t *testing.T) {
 	errorMsg = DebugSqlizer(Lt{"x": nil}) // Cannot use nil values with Lt
 	assert.True(t, strings.HasPrefix(errorMsg, "[ToSql error: "))
 }
+
+func Test_quoteValue(t *testing.T) {
+	tests := map[string]struct {
+		arg  interface{}
+		want string
+	}{
+		"int": {
+			arg:  int(1),
+			want: "1",
+		},
+		"int8": {
+			arg:  int8(1),
+			want: "1",
+		},
+		"int16": {
+			arg:  int16(1),
+			want: "1",
+		},
+		"int32": {
+			arg:  int32(1),
+			want: "1",
+		},
+		"int64": {
+			arg:  int64(1),
+			want: "1",
+		},
+		"uint": {
+			arg:  uint(1),
+			want: "1",
+		},
+		"uint8": {
+			arg:  uint8(1),
+			want: "1",
+		},
+		"uint16": {
+			arg:  uint16(1),
+			want: "1",
+		},
+		"uint32": {
+			arg:  uint32(1),
+			want: "1",
+		},
+		"uint64": {
+			arg:  uint64(1),
+			want: "1",
+		},
+		"float32": {
+			arg:  float32(1.0),
+			want: "1.000000",
+		},
+		"float64": {
+			arg:  float64(1.0),
+			want: "1.000000",
+		},
+		"string": {
+			arg:  "1",
+			want: "'1'",
+		},
+	}
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			if got := quoteValue(tt.arg); got != tt.want {
+				t.Errorf("quoteValue() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
