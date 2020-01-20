@@ -182,6 +182,9 @@ func TestDebugSqlizerErrors(t *testing.T) {
 }
 
 func Test_quoteValue(t *testing.T) {
+	stringNil := func() *string {
+		return nil
+	}
 	tests := map[string]struct {
 		arg  interface{}
 		want string
@@ -237,6 +240,18 @@ func Test_quoteValue(t *testing.T) {
 		"string": {
 			arg:  "1",
 			want: "'1'",
+		},
+		"string:empty": {
+			arg:  "",
+			want: "''",
+		},
+		"string:nil": {
+			arg:  stringNil(),
+			want: "NULL",
+		},
+		"nil": {
+			arg:  nil,
+			want: "NULL",
 		},
 	}
 	for name, tt := range tests {

@@ -184,13 +184,19 @@ func DebugSqlizer(s Sqlizer) string {
 
 // quoteValue quotes value other than numeric.
 func quoteValue(arg interface{}) string {
-	switch arg.(type) {
+	if arg == nil || arg == (*string)(nil) {
+		return "NULL"
+	}
+
+	switch v := arg.(type) {
 	case int, int8, int16, int32, int64,
 		uint, uint8, uint16, uint32, uint64:
-		return fmt.Sprintf("%d", arg)
+		return fmt.Sprintf("%d", v)
 	case float32, float64:
-		return fmt.Sprintf("%f", arg)
+		return fmt.Sprintf("%f", v)
+	case *string:
+		return fmt.Sprintf("%s", *v)
 	default:
-		return fmt.Sprintf("'%v'", arg)
+		return fmt.Sprintf("'%v'", v)
 	}
 }
